@@ -6,6 +6,7 @@ export interface QuotePdfSnapshot {
   annualGenerationKwh:number
   generationSource:'manual'|'pvgis'
   locationLabel?:string
+  moduleReference?:string
   createdOn?:Date
 }
 
@@ -52,6 +53,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
     ['Tipo de sistema',kind],
     ['Dimension estimada',number(budget.systemKwp)+' kWp / '+budget.moduleCount+' modulos'],
     ['Potencia nominal por modulo',number(budget.modulePowerWp)+' Wp'],
+    ['Referencia de modulo (no precio)',normal(snapshot.moduleReference??'Modulo generico')],
     ['Baterias incluidas',number(budget.installedBatteryNominalKwh)+' kWh nominales'],
     ['Consumo mensual declarado',number(snapshot.monthlyConsumptionKwh)+' kWh'],
     ['Generacion anual estimada',number(snapshot.annualGenerationKwh)+' kWh'],
@@ -92,7 +94,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
     pdf.text(clp(line.unitNetClp),153,y,{align:'right'})
     pdf.setTextColor(...ink)
     pdf.text(clp(line.totalNetClp),W-pad-2,y,{align:'right'})
-    y+=8
+    y+=7
   }
   y+=4
   pdf.setDrawColor(205,217,220)
@@ -104,7 +106,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
     ['IVA ilustrativo ('+number(budget.vatPct)+'%)',clp(budget.vatClp)],
   ]
   for(const [name,value] of totals){
-    y+=7
+    y+=6
     pdf.setTextColor(...muted);pdf.text(name,116,y)
     pdf.setTextColor(...ink);pdf.text(value,W-pad,y,{align:'right'})
   }
@@ -117,7 +119,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
   pdf.text('TOTAL DEMOSTRATIVO (IVA INCL.)',pad+6,y+4)
   pdf.setFontSize(12)
   pdf.text(clp(budget.grandTotalClp),W-pad-5,y+4,{align:'right'})
-  y+=24
+  y+=15
   const notes=[
     'DOCUMENTO DE PRUEBA - PRECIOS FICTICIOS Y EDITABLES. NO ES COTIZACION.',
     'No se han seleccionado ni cotizado marcas, modelos, garantias o proveedores.',
@@ -127,7 +129,8 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
     'Un valor de IVA simulado no convierte este PDF en documento tributario.',
   ]
   // Explicitly leave enough room for one A4 page.
-  if(y>250){pdf.addPage();y=24}
+  // Keep complete disclaimer on the current page when it fits above footer.
+  if(y + 6 + notes.length*5 > 279){pdf.addPage();y=24}
   pdf.setTextColor(...ink)
   pdf.setFont('helvetica','bold')
   pdf.setFontSize(8)

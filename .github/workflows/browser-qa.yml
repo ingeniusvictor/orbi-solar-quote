@@ -1,0 +1,39 @@
+name: Browser QA · Web and PDF
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium and PDF inspection
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+      - name: Build
+        run: npm run build
+      - name: Desktop and Android-size browser QA + downloaded PDF
+        run: npm run test:e2e
+      - name: Upload screenshots, downloaded PDF and trace artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sq-browser-pdf-qa
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 14

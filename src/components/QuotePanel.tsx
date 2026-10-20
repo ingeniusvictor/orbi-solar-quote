@@ -7,6 +7,7 @@ interface Props {
   systemType:SystemType
   moduleCount:number
   modulePowerWp:number
+  moduleReference:string
   estimatedBatteryKwh:number|null
   monthlyConsumptionKwh:number
   annualGenerationKwh:number
@@ -45,6 +46,7 @@ export function QuotePanel(props:Props){
         annualGenerationKwh:props.annualGenerationKwh,
         generationSource:props.generationSource,
         locationLabel:props.locationLabel,
+        moduleReference:props.moduleReference,
       })
     } catch {
       setDownloadError('No se pudo generar el archivo PDF. Revisa el navegador y vuelve a intentarlo.')
@@ -66,7 +68,7 @@ export function QuotePanel(props:Props){
     <div className="sq-quote-warning" role="note">
       <ShieldAlert size={22}/>
       <div><strong>SIMULACIÓN — TODOS LOS PRECIOS SON FICTICIOS</strong>
-        <p>Los valores predeterminados sirven solo para probar el cotizador. No son precios investigados, ofertas de proveedores ni recomendaciones de equipamiento. Edita cada valor neto antes de usar el cálculo como referencia interna.</p>
+        <p>Los valores predeterminados sirven solo para probar el cotizador. No son precios de proveedores ni representan el módulo elegido ({props.moduleReference}). Aunque el módulo tenga ficha oficial, su precio sigue siendo ficticio.</p>
       </div>
     </div>
     <div className="sq-quote-config">

@@ -46,3 +46,11 @@ El MVP incorpora un presupuesto en CLP elaborado mediante un catálogo **totalme
 El botón **Descargar PDF de demostración** genera un archivo directamente en el navegador, sin cuenta y sin guardar datos en el servidor. El documento contiene la composición, IVA y exclusiones, y advierte de manera destacada que **NO constituye una cotización comercial real ni una factura**.
 
 Hasta contar con fichas técnicas, modelos seleccionados y precios de proveedores, no es correcto ofrecer estos resultados como precios del mercado. Ver `docs/SQ04_PRICEBOOK_AND_PDF.md`.
+
+## SQ-04B — Primer módulo con datos técnicos del fabricante
+
+Se puede alternar entre una referencia genérica sin ficha y **Trina Solar TSM-450 NEG9R.28**, cuyos datos de potencia, superficie y parámetros eléctricos provienen de la ficha oficial TSM_ESP_2024_C. La selección cambia realmente el dimensionamiento energético y de techo. Se añade una holgura geométrica del 10% por módulo para el cálculo preliminar; no equivale a un diseño de posiciones sobre cubierta.
+
+El comparador de string muestra únicamente una referencia aritmética usando el inversor GoodWe GW5000-DNS-30, **sin aprobar compatibilidad, AFCI, perfil de red ni autorización SEC chilena**. Todo equipo debe comprobarse en el registro oficial de la SEC antes de TE4 (incluida la obligación AFCI vigente desde 2026). Los costos siguen siendo **100% ficticios**, aun cuando el módulo técnico sea real.
+
+QA de navegador y PDF: `npm run test:e2e` (Playwright, Chromium). El artefacto de GitHub Actions incluirá captura PNG del resultado y PDF descargado para inspección posterior.
