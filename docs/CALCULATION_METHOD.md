@@ -47,3 +47,9 @@ Se añadió un despacho determinista a resolución de una hora para 365 días de
 El módulo informa energía fotovoltaica directa, carga/descarga, importación, inyección, excedente desaprovechado, demanda no suministrada y pérdidas. Su desglose económico es una **valorización ilustrativa de kWh**, no factura Net Billing, y solo se muestra para redes on-grid/híbridas. Ver `docs/SQ03_HOURLY_MODEL.md`.
 
 Los antiguos cálculos heurísticos de ahorro en `calculateSolar` se mantienen como legado interno de SQ-01, pero **no se muestran como ahorro principal en pantalla**. El resumen principal ahora enlaza al análisis horario explícito. Se retirarán cuando se estabilice el nuevo contrato de resultados.
+
+## SQ-04 — Costos y documento PDF de demostración
+
+La hoja de costos `src/lib/quote.ts` y el generador PDF `src/lib/quote-pdf.ts` trabajan únicamente con precios ficticios editables, sin APIs de proveedores ni base de datos comercial. Las cantidades son aproximaciones: 1 inversor genérico, `N` módulos según SQ-01, módulos de batería genéricos de 5 kWh, y mano de obra por kWp. Fórmula: suma de líneas netas → margen sobre costo directo → IVA porcentual sobre neto con margen → total.
+
+No se calcula utilidad real, retorno financiero ni rentabilidad; la selección de equipo y factibilidad requiere ingeniería, normativa SEC y cotizaciones verificadas. El PDF no es documento tributario y no requiere ni registra nombre de cliente.
