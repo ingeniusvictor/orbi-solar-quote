@@ -57,3 +57,14 @@ Limitaciones pendientes:
 6. Valorar ahorro por liquidación real de Net Billing solo tras tarifa y perfil horario validados.
 
 Mantener PR en borrador, sin fusionar a `main` ni habilitar como cotizador comercial.
+
+## Tasas y auditoría de seguridad
+
+Se usa una tasa de IVA editable, inicialmente 19%, conforme a la tasa general informada por el SII:
+https://www.sii.cl/preguntas_frecuentes/impuestos_mensuales/001_130_0572.htm
+Esto no implica pronunciamiento tributario sobre cada producto/servicio.
+
+La versión inicial `jspdf@^3.0.3` produjo alertas de seguridad y fue reemplazada por `jspdf@^4.2.1`, versión parcheada según advisories `GHSA-wfv2-pwc8-crg5` y `GHSA-f8cm-6447-x5h2`.
+- Auditoría automática de dependencias productivas: `npm audit --omit=dev --audit-level=high` dentro de GitHub Actions; pasó en run 39511582080.
+- El inventario global npm usado en el build de Vercel todavía reporta advertencias en dependencias no limitadas a producción (3: 1 moderada y 2 críticas); se requiere auditoría por paquete antes de homologar el pipeline. No afirmar auditoría global limpia.
+- El generador PDF se importa dinámicamente solo al hacer clic.

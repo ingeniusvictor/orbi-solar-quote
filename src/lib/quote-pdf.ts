@@ -137,12 +137,16 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
   pdf.setTextColor(...muted)
   pdf.setFontSize(7.3)
   for(const line of notes){pdf.text(line,pad,y);y+=5}
-  pdf.setDrawColor(210,223,225)
-  pdf.line(pad,282,W-pad,282)
-  pdf.setFontSize(7)
-  pdf.setTextColor(...muted)
-  pdf.text('ORBI Ecosystem | SQ-04 | BORRADOR DE DEMOSTRACION',pad,288)
-  pdf.text('Pagina 1 / '+pdf.getNumberOfPages(),W-pad,288,{align:'right'})
+  const pages = pdf.getNumberOfPages()
+  for (let page=1;page<=pages;page++) {
+    pdf.setPage(page)
+    pdf.setDrawColor(210,223,225)
+    pdf.line(pad,282,W-pad,282)
+    pdf.setFontSize(7)
+    pdf.setTextColor(...muted)
+    pdf.text('ORBI Ecosystem | SQ-04 | BORRADOR DE DEMOSTRACION',pad,288)
+    pdf.text('Pagina '+page+' / '+pages,W-pad,288,{align:'right'})
+  }
   return pdf
 }
 
