@@ -187,3 +187,28 @@ main{position:relative}.background-glow{position:absolute;top:15px;left:55%;widt
 .sq-equipment-tip svg{flex:none}
 @media(max-width:700px){.sq-equipment-panel{padding:15px}.sq-equipment-options{grid-template-columns:1fr}.sq-equipment-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media print{.sq-equipment-panel{background:#fff;color:#111}.sq-equipment-options,.sq-equipment-screen,.sq-equipment-warning,.sq-equipment-source,.sq-equipment-tip{display:none}}
+
+/* SQ-04C Technical inverter/battery sources and compatibility screening */
+.sq-catalog-panel{border:1px solid #3a6872;background:linear-gradient(125deg,#102d3c,#0c2532);border-radius:14px;padding:20px;color:#e3f3ef}
+.sq-catalog-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:19px 0 15px}
+.sq-catalog-inputs label{font-size:11px;font-weight:700;color:#bfd5d9;display:flex;flex-direction:column;gap:9px}
+.sq-catalog-inputs select{border:1px solid #466976;border-radius:9px;background:#0b2733;color:#eefaf5;padding:11px;max-width:100%;min-width:0;font-size:12px}
+.sq-catalog-facts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sq-catalog-facts>div{padding:15px;border:1px solid #345963;border-radius:11px;background:#0d2634;display:flex;flex-direction:column;gap:7px}
+.sq-catalog-facts svg{color:#7be5cc}
+.sq-catalog-facts strong{font-size:13px}
+.sq-catalog-facts span,.sq-catalog-facts small{font-size:10px;color:#b5cbd0;line-height:1.7}
+.sq-catalog-facts a{font-size:10px;color:#79eacb;display:inline-flex;align-items:center;gap:5px}
+.sq-catalog-status{display:flex;gap:10px;align-items:flex-start;padding:14px;border-radius:10px;border:1px solid #75654c;background:#332f28;margin-top:16px}
+.sq-catalog-status.is-blocked{border-color:#9a5a48;background:#432826}
+.sq-catalog-status>svg{flex:none;color:#f5bd7a}
+.sq-catalog-status strong{font-size:11px;color:#ffe0ae}
+.sq-catalog-status p{font-size:11px;color:#d9c4af;line-height:1.6;margin:8px 0 0}
+.sq-catalog-disclaimer{display:flex;align-items:flex-start;gap:10px;border-top:1px solid #37545f;margin-top:16px;padding-top:14px}
+.sq-catalog-disclaimer svg{flex:none;color:#f1be84}
+.sq-catalog-disclaimer p{font-size:11px;line-height:1.75;color:#b8cbd0;margin:0}
+.sq-catalog-panel a{color:#7de9cb;text-underline-offset:3px}
+.sq-catalog-tip{display:flex;align-items:flex-start;gap:8px;margin:13px 0 0;font-size:10px;color:#a1c2c6;line-height:1.7}
+.sq-catalog-tip svg{flex:none}
+@media(max-width:700px){.sq-catalog-panel{padding:15px}.sq-catalog-inputs,.sq-catalog-facts{grid-template-columns:1fr}}
+@media print{.sq-catalog-panel{background:#fff;color:#111}.sq-catalog-inputs,.sq-catalog-status,.sq-catalog-disclaimer,.sq-catalog-tip{display:none}}
