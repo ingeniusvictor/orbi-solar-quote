@@ -1,4 +1,5 @@
 import type { SystemType } from './solar'
+import { validPvgisHourly, type PvgisHourlySeries } from './hourly-series'
 
 /**
  * ORBI SQ-03 — hourly energy balance using 365 identical representative days
@@ -40,7 +41,7 @@ export interface MonthlyFlows extends EnergyFlows {
 }
 
 export interface HourlyReport {
-  source: 'synthetic-hourly'
+  source: 'synthetic-hourly' | 'pvgis-hourly'
   monthly: MonthlyFlows[]
   annual: EnergyFlows
   startingBatterySocKwh: number
@@ -184,5 +185,90 @@ export function simulateHourly(input: HourlyScenario): HourlyReport {
     selfSupplyPct:annual.demandKwh > 0
       ? directlySuppliedKwh/annual.demandKwh*100 : 0,
     indicativeEnergyValueClp,baselineVariableEnergyClp,estimatedGridEnergyClp,
+  }
+}
+
+/**
+ * Use PVGIS seriescalc one-year historical modelled PV output in UTC; no
+ * synthetic SOLAR curve is applied. Demand remains a selected synthetic profile,
+ * expressed in America/Santiago civil hours (DST-aware via Intl).
+ * Monthly consumption is reconciled to UTC calendar months for an exact 12x
+ * declared monthly load without annual boundary truncation artifacts.
+ */
+export function simulatePvgisHourly(input: HourlyScenario, series: PvgisHourlySeries, systemKwp: number): HourlyReport {
+  validate(input)
+  if (!validPvgisHourly(series) || !Number.isFinite(systemKwp) || systemKwp < 0 || systemKwp > 1e6) {
+    throw new RangeError('Serie PVGIS o potencia inválidas.')
+  }
+  const connected = input.systemType !== 'off-grid'
+  const batteryKwh = input.systemType === 'on-grid' ? 0 : input.batteryNominalKwh
+  const minSoc = batteryKwh * MIN_SOC_FRACTION
+  let soc = minSoc
+  const shapes = demandWeights(input.demandProfile)
+  const localHour = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'America/Santiago', hour: '2-digit', hourCycle: 'h23',
+  })
+  const base = Date.UTC(2023,0,1)
+  const samples = Array.from({length:8760}, (_,i) => {
+    const time = new Date(base + i * 3600000)
+    const monthIndex = time.getUTCMonth()
+    const hour = Number(localHour.format(time))
+    if(!Number.isInteger(hour) || hour < 0 || hour > 23) throw Error('Hora local no válida')
+    return { monthIndex, weight: shapes[hour] }
+  })
+  const sums = Array<number>(12).fill(0)
+  for(const sample of samples) sums[sample.monthIndex] += sample.weight
+  const monthly = Array.from({length:12}, (_,i):MonthlyFlows=>({
+    month:i+1,...zero(),endBatterySocKwh: minSoc,
+  }))
+  const annual = zero()
+  for(let i=0; i<8760; i++) {
+    const {monthIndex,weight}=samples[i]
+    const generation=series.utcHourKwhPerKwp[i]*systemKwp
+    const demand=input.monthlyConsumptionKwh*weight/sums[monthIndex]
+    const direct=Math.min(generation,demand)
+    let surplus=generation-direct
+    let shortage=demand-direct
+    let charged=0,discharged=0
+    if(batteryKwh>0){
+      charged=Math.min(surplus,input.maxBatteryChargeKw,
+        Math.max(0,(batteryKwh-soc)/CHARGE_EFFICIENCY))
+      soc+=charged*CHARGE_EFFICIENCY
+      surplus-=charged
+      discharged=Math.min(shortage,input.maxBatteryDischargeKw,
+        Math.max(0,(soc-minSoc)*DISCHARGE_EFFICIENCY))
+      soc-=discharged/DISCHARGE_EFFICIENCY
+      shortage-=discharged
+      soc=Math.max(minSoc,Math.min(batteryKwh,soc))
+    }
+    const flow:EnergyFlows={
+      generationKwh:generation,demandKwh:demand,directSelfUseKwh:direct,
+      batteryChargeInputKwh:charged,batteryDischargeToLoadKwh:discharged,
+      batteryLossKwh:charged*(1-CHARGE_EFFICIENCY)+
+        discharged*(1/DISCHARGE_EFFICIENCY-1),
+      gridImportKwh:connected?shortage:0,
+      gridExportKwh:connected?surplus:0,
+      curtailedKwh:connected?0:surplus,
+      unmetDemandKwh:connected?0:shortage,
+    }
+    for(const key of numericKeys) {
+      annual[key]+=flow[key]
+      monthly[monthIndex][key]+=flow[key]
+    }
+    monthly[monthIndex].endBatterySocKwh=soc
+  }
+  const served=annual.directSelfUseKwh+annual.batteryDischargeToLoadKwh
+  return {
+    source:'pvgis-hourly',monthly,annual,
+    startingBatterySocKwh:minSoc,endingBatterySocKwh:soc,
+    directSelfConsumptionPct:annual.generationKwh>0
+      ?annual.directSelfUseKwh/annual.generationKwh*100:0,
+    loadServedPct:annual.demandKwh>0
+      ?(annual.demandKwh-annual.unmetDemandKwh)/annual.demandKwh*100:100,
+    selfSupplyPct:annual.demandKwh>0?served/annual.demandKwh*100:0,
+    baselineVariableEnergyClp:connected?annual.demandKwh*input.retailTariffClpKwh:null,
+    estimatedGridEnergyClp:connected?annual.gridImportKwh*input.retailTariffClpKwh:null,
+    indicativeEnergyValueClp:connected
+      ?served*input.retailTariffClpKwh+annual.gridExportKwh*input.exportTariffClpKwh:null,
   }
 }

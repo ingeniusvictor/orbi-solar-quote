@@ -98,3 +98,13 @@ main{position:relative}.background-glow{position:absolute;top:15px;left:55%;widt
 .hourly-source svg{flex:none}.hourly-source p{font-size:10px;line-height:1.7;margin:0}
 @media(max-width:750px){.hourly-panel{padding:17px}.hourly-summary{grid-template-columns:1fr}.hourly-summary>div{padding:13px}.hourly-heading{flex-direction:column}.hourly-battery-fields{grid-template-columns:1fr}.hourly-economics>div{flex-direction:column;align-items:flex-start;gap:6px}}
 @media print{.hourly-panel,.hourly-summary>div,.hourly-settings,.hourly-economics{background:#fff!important;color:#111!important;border-color:#aaa}.hourly-heading p,.hourly-source p,.hourly-summary small,.hourly-economics p{color:#333!important}}
+
+/* SQ-03B: optional 8760-hour PVGIS historical production source */
+.hourly-pvgis-card{margin:18px 0 5px;padding:18px;border:1px solid #3e696b;border-radius:12px;background:#0d2831}
+.hourly-pvgis-title{display:flex;align-items:center;gap:9px;color:#7ce9ce;font-size:12px}
+.hourly-pvgis-card p{color:#accad0;font-size:11px;line-height:1.7;margin:12px 0}
+.hourly-pvgis-card small{display:block;color:#93b0b9;font-size:10px;line-height:1.6;margin-top:12px}
+.hourly-pvgis-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.hourly-pvgis-success{display:flex;align-items:center;gap:6px;font-size:11px;color:#74eeca}
+.hourly-pvgis-card .hourly-pvgis-error{border:1px solid #946948;padding:11px;border-radius:8px;color:#ffd2a9}
+@media print{.hourly-pvgis-card{border-color:#aaa;background:#fff;color:#111}.hourly-pvgis-card p,.hourly-pvgis-card small{color:#444}}

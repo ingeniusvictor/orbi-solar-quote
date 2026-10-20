@@ -60,3 +60,7 @@ Normas y marco oficiales:
 3. Simular pérdidas, clipping de inversor, potencia de arranque, profundidad admisible por fabricante, SOC inicial/cierre anual, ciclos, degradación, restricciones de respaldo y días nublados consecutivos.
 4. Confirmar tarifa distribuidora/cliente, regulación vigente, valorización real de inyecciones y remanentes contractuales.
 5. Añadir pruebas numéricas de referencia con escenarios independientes y cotizaciones revisadas por profesionales habilitados.
+
+## Extensión SQ-03B: simulación con serie real de producción modelada
+
+La extensión optativa `seriescalc` permite reemplazar la **curva FV horaria sintética** por resultados PVGIS modelados hora a hora para 2023. El consumo sigue siendo una forma horaria supuesta, normalizada cada mes UTC. Consulta `docs/SQ03B_PVGIS_HOURLY.md` para su alcance y limitaciones. Sin consulta externa, el modo de 8.760 horas sintéticas permanece disponible.
