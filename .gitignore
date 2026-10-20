@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+.vite/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+*.local
+android/.gradle/
+android/build/
