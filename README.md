@@ -38,3 +38,11 @@ Detalle: [Método SQ-03](docs/SQ03_HOURLY_MODEL.md).
 ## SQ-03B — Generación horaria PVGIS (histórica)
 
 Tras consultar PVGIS por coordenadas, el usuario puede solicitar la serie modelada de **8.760 horas de 2023** (`seriescalc`). La generación solar horaria proviene de PVGIS cuando el servicio responde; el perfil de demanda sigue siendo hipotético. Si falla la llamada, la UI permanece en modo sintético claramente señalado. Detalles: [SQ-03B](docs/SQ03B_PVGIS_HOURLY.md).
+
+## SQ-04 — Catálogo económico editable y PDF
+
+El MVP incorpora un presupuesto en CLP elaborado mediante un catálogo **totalmente ficticio** de módulos, inversor, batería, fijaciones, protecciones, ingeniería, mano de obra y logística. Se pueden editar precios unitarios netos, margen, IVA de referencia y capacidad nominal de batería; el cálculo se rehace de forma determinista con pruebas.
+
+El botón **Descargar PDF de demostración** genera un archivo directamente en el navegador, sin cuenta y sin guardar datos en el servidor. El documento contiene la composición, IVA y exclusiones, y advierte de manera destacada que **NO constituye una cotización comercial real ni una factura**.
+
+Hasta contar con fichas técnicas, modelos seleccionados y precios de proveedores, no es correcto ofrecer estos resultados como precios del mercado. Ver `docs/SQ04_PRICEBOOK_AND_PDF.md`.

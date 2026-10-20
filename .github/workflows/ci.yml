@@ -16,6 +16,8 @@ jobs:
           node-version: '22'
       - name: Install
         run: npm install --no-audit --no-fund
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
       - name: Unit tests
         run: npm run test
       - name: Production build

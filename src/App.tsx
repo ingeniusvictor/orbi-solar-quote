@@ -9,6 +9,7 @@ import { calculateSolar, type Orientation, type SystemType } from './lib/solar'
 import type { SolarResource } from './lib/pvgis'
 import { SolarResourcePanel } from './components/SolarResourcePanel'
 import { HourlySimulationPanel } from './components/HourlySimulationPanel'
+import { QuotePanel } from './components/QuotePanel'
 
 type ConsumptionMode = 'bill' | 'kwh'
 type Step = 0 | 1 | 2
@@ -97,7 +98,7 @@ export default function App() {
       <div className="topbar-inner">
         <button type="button" className="logo-button" onClick={reset} aria-label="Volver al inicio"><Logo /></button>
         <div className="nav-right">
-          <span className="prototype-pill"><span className="online-dot" /> PROTOTIPO 0.4</span>
+          <span className="prototype-pill"><span className="online-dot" /> PROTOTIPO 0.5</span>
           <button type="button" className="nav-link" onClick={() => document.getElementById('metodologia')?.scrollIntoView({ behavior: 'smooth' })}>Metodología <ChevronRight size={14}/></button>
         </div>
       </div>
@@ -251,7 +252,17 @@ export default function App() {
                 systemKwp={result.systemKwp}
                 solarResource={solarResource}
               />
-              <div className="result-disclaimer"><ShieldCheck size={20}/><div><b>Transparencia ante todo.</b><p>Estos resultados son orientativos. {solarResource ? 'La irradiación y geometría simulada provienen de PVGIS, pero no hay evaluación de sombras locales ni geometría real del techo. ' : 'Se usan factores y un perfil estacional genéricos; no se consultó radiación por ubicación. '}El balance de consumo y baterías utiliza distribuciones horarias hipotéticas, no consumos medidos ni un año meteorológico horario. Sin visita ni inspección estructural. No es una cotización comercial, una liquidación real de Net Billing ni un proyecto de ingeniería.</p></div></div>
+              <QuotePanel
+                systemType={systemType}
+                moduleCount={result.modules}
+                modulePowerWp={550}
+                estimatedBatteryKwh={result.estimatedBatteryNominalKwh}
+                monthlyConsumptionKwh={monthlyKwh}
+                annualGenerationKwh={result.annualGenerationKwh}
+                generationSource={result.calculationSource}
+                locationLabel={commune}
+              />
+              <div className="result-disclaimer"><ShieldCheck size={20}/><div><b>Transparencia ante todo.</b><p>Estos resultados son orientativos. {solarResource ? 'La irradiación y geometría simulada provienen de PVGIS, pero no hay evaluación de sombras locales ni geometría real del techo. ' : 'Se usan factores y un perfil estacional genéricos; no se consultó radiación por ubicación. '}El balance de consumo utiliza perfiles horarios hipotéticos, incluso cuando se solicita generación PVGIS horaria 2023; no son consumos medidos. El presupuesto usa exclusivamente precios de ejemplo ficticios. Sin visita ni inspección estructural. No es una cotización comercial, una liquidación real de Net Billing ni un proyecto de ingeniería.</p></div></div>
               <div className="wizard-footer result-actions"><button type="button" className="button-back" onClick={() => goTo(1)}><ArrowLeft size={18}/> Editar vivienda</button><div className="result-action-right"><button type="button" className="button-outline" onClick={() => window.print()}><FileText size={17}/> Imprimir resumen</button><button type="button" className="button-primary" onClick={reset}><RotateCcw size={17}/> Nueva simulación</button></div></div>
             </>}
           </div>
@@ -264,10 +275,10 @@ export default function App() {
             <div className="feature-card"><span className="feature-icon"><BatteryCharging size={23}/></span><h4>Compara opciones</h4><p>Explora on-grid, híbrido y off-grid sin confundir una estimación rápida con una ingeniería completa.</p></div>
             <div className="feature-card"><span className="feature-icon"><ShieldCheck size={23}/></span><h4>Privacidad desde el inicio</h4><p>El cálculo manual funciona en tu navegador. Las coordenadas se envían a PVGIS solo cuando solicitas una consulta voluntaria.</p></div>
           </div>
-          <div className="roadmap-line"><span><span className="roadmap-dot"/> DISPONIBLE: SIMULADOR PRELIMINAR</span><span>PVGIS HORARIO OPCIONAL · PRÓXIMAMENTE: EQUIPOS · PRECIOS · PDF</span></div>
+          <div className="roadmap-line"><span><span className="roadmap-dot"/> DISPONIBLE: SIMULADOR PRELIMINAR</span><span>CATÁLOGO DEMO Y PDF · PRÓXIMAMENTE: EQUIPOS Y PRECIOS VERIFICADOS</span></div>
         </section>
       </div>
     </main>
-    <footer className="site-footer"><div className="page-container footer-inner"><Logo/><span>© 2026 ORBI Ecosystem · Tecnología al servicio de tu energía.</span><span className="footer-version">ORBI SOLAR QUOTE v0.4</span></div></footer>
+    <footer className="site-footer"><div className="page-container footer-inner"><Logo/><span>© 2026 ORBI Ecosystem · Tecnología al servicio de tu energía.</span><span className="footer-version">ORBI SOLAR QUOTE v0.5</span></div></footer>
   </div>
 }
