@@ -65,7 +65,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
   for(const [label,value] of meta){
     pdf.setTextColor(...muted);pdf.text(label+':',pad,y)
     pdf.setTextColor(...ink);pdf.text(value,pad+64,y)
-    y+=5.5
+    y+=5
   }
   y+=5
   pdf.setDrawColor(210,222,225)
