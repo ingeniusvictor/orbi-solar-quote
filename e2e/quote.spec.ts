@@ -73,6 +73,6 @@ test('flags inverter/BESS conflicts and preserves unpriced technical references 
   expect(content).toContain('PRESUPUESTO DEMOSTRATIVO')
   expect(content).toContain('NO ES COTIZACION')
   const info=execFileSync('pdfinfo',[filename],{encoding:'utf8'})
-  expect(info).toMatch(/Pages:\\s+1(?:\\s|$)/)
+  expect(info).toMatch(/Pages:\s+1(?:\s|$)/)
   await testInfo.attach('referencias-sin-precio',{path:filename,contentType:'application/pdf'})
 })
