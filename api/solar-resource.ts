@@ -135,7 +135,7 @@ export default async function handler(req: Request, res: Response) {
   const input = parseSolarResourceRequest(req.query)
   if (!input) {
     return res.status(400).json({
-      error: 'Ingresa coordenadas del Chile continental, inclinación 0–90°, pérdidas 0–50°/%, y orientación válida.',
+      error: 'Ingresa coordenadas del Chile continental, inclinación 0–90°, pérdidas 0–50 %, y orientación válida.',
     })
   }
   try {
