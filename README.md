@@ -54,3 +54,9 @@ Se puede alternar entre una referencia genérica sin ficha y **Trina Solar TSM-4
 El comparador de string muestra únicamente una referencia aritmética usando el inversor GoodWe GW5000-DNS-30, **sin aprobar compatibilidad, AFCI, perfil de red ni autorización SEC chilena**. Todo equipo debe comprobarse en el registro oficial de la SEC antes de TE4 (incluida la obligación AFCI vigente desde 2026). Los costos siguen siendo **100% ficticios**, aun cuando el módulo técnico sea real.
 
 QA de navegador y PDF: `npm run test:e2e` (Playwright, Chromium). El artefacto de GitHub Actions incluirá captura PNG del resultado y PDF descargado para inspección posterior.
+
+## SQ-04C — Inversores y BESS con fichas reales
+
+Se añadió un **catálogo técnico separable del presupuesto**: GoodWe GW5000-DNS-30 on-grid, GoodWe GW5000-EH híbrido y baterías BYD Battery-Box HVS 5.1 (5,12 kWh CC) / HVS 10.2 (10,24 kWh CC). Sus datos derivan de fichas de fabricante identificadas en `docs/SQ04C_INVERTER_BESS.md`.
+
+Se examina orientativamente tensión FV máxima, corrientes MPPT, potencia PV de entrada, tipo de interfaz de batería y coincidencia de ventanas de voltaje. **NUNCA se aprueba compatibilidad por mera coincidencia de voltajes**: falta lista OEM de BMS/firmware, autorización SEC/AFCI y proyecto eléctrico. El inversor on-grid con batería y una propuesta aislada sin validación se bloquean. Las referencias técnicas se incluyen solo informativamente en el PDF, y **no reemplazan las partidas genéricas ni fijan precios**.

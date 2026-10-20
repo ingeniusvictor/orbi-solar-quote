@@ -11,6 +11,8 @@ import { SolarResourcePanel } from './components/SolarResourcePanel'
 import { HourlySimulationPanel } from './components/HourlySimulationPanel'
 import { QuotePanel } from './components/QuotePanel'
 import { EquipmentPanel } from './components/EquipmentPanel'
+import { InverterBatteryPanel } from './components/InverterBatteryPanel'
+import {inverterById,batteryById,type InverterId,type BatteryId} from './lib/equipment-catalog'
 import {moduleById,type ModuleId} from './lib/equipment'
 
 type ConsumptionMode = 'bill' | 'kwh'
@@ -59,6 +61,10 @@ export default function App() {
   const [commune, setCommune] = useState('')
   const [area, setArea] = useState(32)
   const [moduleId,setModuleId] = useState<ModuleId>('generic-550')
+  const [inverterId,setInverterId]=useState<InverterId>('none')
+  const [batteryId,setBatteryId]=useState<BatteryId>('none')
+  const selectedInverter=inverterById(inverterId)
+  const selectedBattery=batteryById(batteryId)
   const selectedModule = moduleById(moduleId)
   const [roof, setRoof] = useState('Zinc / metálica')
   const [orientation, setOrientation] = useState<Orientation>('N')
@@ -89,7 +95,7 @@ export default function App() {
   function reset() {
     setStep(0)
     setMode('bill'); setBill(90000); setConsumption(410); setRetailTariff(220)
-    setExportTariff(75); setCommune(''); setArea(32); setModuleId('generic-550'); setRoof('Zinc / metálica')
+    setExportTariff(75); setCommune(''); setArea(32); setModuleId('generic-550'); setInverterId('none'); setBatteryId('none'); setRoof('Zinc / metálica')
     setOrientation('N'); setSystemType('on-grid'); setYieldRef(1700); setLosses(17)
     setSolarResource(null)
     setShowAdvanced(false)
@@ -102,7 +108,7 @@ export default function App() {
       <div className="topbar-inner">
         <button type="button" className="logo-button" onClick={reset} aria-label="Volver al inicio"><Logo /></button>
         <div className="nav-right">
-          <span className="prototype-pill"><span className="online-dot" /> PROTOTIPO 0.6</span>
+          <span className="prototype-pill"><span className="online-dot" /> PROTOTIPO 0.7</span>
           <button type="button" className="nav-link" onClick={() => document.getElementById('metodologia')?.scrollIntoView({ behavior: 'smooth' })}>Metodología <ChevronRight size={14}/></button>
         </div>
       </div>
@@ -192,6 +198,11 @@ export default function App() {
                   </FormField>
                 </div>
                 <EquipmentPanel moduleId={moduleId} onModuleChange={setModuleId} moduleCount={result.modules} systemType={systemType}/>
+                <InverterBatteryPanel
+                  inverterId={inverterId} batteryId={batteryId} moduleId={moduleId}
+                  moduleCount={result.modules} systemType={systemType}
+                  onInverterChange={setInverterId} onBatteryChange={setBatteryId}
+                />
                 <SolarResourcePanel resource={solarResource} onResourceChange={setSolarResource} orientation={orientation} lossesPct={losses} />
                 <FormField title="¿Qué tipo de sistema necesitas?">
                   <div className="system-grid">{options.map(o => {const Icon=o.icon; return <button type="button" key={o.value} className={'system-option ' + (systemType === o.value ? 'selected' : '')} aria-pressed={systemType === o.value} onClick={() => setSystemType(o.value)}><Icon size={23}/><strong>{o.name}</strong><small>{o.caption}</small>{systemType === o.value && <span className="system-check"><Check size={14}/></span>}</button>})}</div>
@@ -262,6 +273,11 @@ export default function App() {
                 moduleCount={result.modules}
                 modulePowerWp={selectedModule.powerWp}
                 moduleReference={selectedModule.manufacturer + ' ' + selectedModule.model}
+                equipmentReference={
+                  (selectedInverter.id==='none'?'':selectedInverter.manufacturer+' '+selectedInverter.model)+
+                  (selectedInverter.id!=='none'&&selectedBattery.id!=='none'?' / ':'')+
+                  (selectedBattery.id==='none'?'':selectedBattery.manufacturer+' '+selectedBattery.model)
+                }
                 estimatedBatteryKwh={result.estimatedBatteryNominalKwh}
                 monthlyConsumptionKwh={monthlyKwh}
                 annualGenerationKwh={result.annualGenerationKwh}
@@ -281,10 +297,10 @@ export default function App() {
             <div className="feature-card"><span className="feature-icon"><BatteryCharging size={23}/></span><h4>Compara opciones</h4><p>Explora on-grid, híbrido y off-grid sin confundir una estimación rápida con una ingeniería completa.</p></div>
             <div className="feature-card"><span className="feature-icon"><ShieldCheck size={23}/></span><h4>Privacidad desde el inicio</h4><p>El cálculo manual funciona en tu navegador. Las coordenadas se envían a PVGIS solo cuando solicitas una consulta voluntaria.</p></div>
           </div>
-          <div className="roadmap-line"><span><span className="roadmap-dot"/> DISPONIBLE: SIMULADOR PRELIMINAR</span><span>MÓDULO CON FICHA TÉCNICA · PRECIOS DEMO · SEC PENDIENTE</span></div>
+          <div className="roadmap-line"><span><span className="roadmap-dot"/> DISPONIBLE: SIMULADOR PRELIMINAR</span><span>FICHAS DE MÓDULOS, INVERSORES Y BESS · PRECIOS DEMO · SEC PENDIENTE</span></div>
         </section>
       </div>
     </main>
-    <footer className="site-footer"><div className="page-container footer-inner"><Logo/><span>© 2026 ORBI Ecosystem · Tecnología al servicio de tu energía.</span><span className="footer-version">ORBI SOLAR QUOTE v0.6</span></div></footer>
+    <footer className="site-footer"><div className="page-container footer-inner"><Logo/><span>© 2026 ORBI Ecosystem · Tecnología al servicio de tu energía.</span><span className="footer-version">ORBI SOLAR QUOTE v0.7</span></div></footer>
   </div>
 }

@@ -7,6 +7,7 @@ export interface QuotePdfSnapshot {
   generationSource:'manual'|'pvgis'
   locationLabel?:string
   moduleReference?:string
+  equipmentReference?:string
   createdOn?:Date
 }
 
@@ -59,6 +60,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
     ['Generacion anual estimada',number(snapshot.annualGenerationKwh)+' kWh'],
     ['Fuente de generacion',snapshot.generationSource==='pvgis'?'PVGIS PVcalc mensual':'Modelo manual ilustrativo'],
   ]
+  if(snapshot.equipmentReference?.trim())meta.push(['Equipos SOLO referencia',normal(snapshot.equipmentReference)])
   if(snapshot.locationLabel?.trim())meta.push(['Ubicacion declarada',normal(snapshot.locationLabel)])
   for(const [label,value] of meta){
     pdf.setTextColor(...muted);pdf.text(label+':',pad,y)
@@ -122,7 +124,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
   y+=15
   const notes=[
     'DOCUMENTO DE PRUEBA - PRECIOS FICTICIOS Y EDITABLES. NO ES COTIZACION.',
-    'No se han seleccionado ni cotizado marcas, modelos, garantias o proveedores.',
+    'Inversor y bateria mostrados como fichas NO estan cotizados ni validados.',
     'Potencia de inversor, cantidades, protecciones y estructuras requieren ingenieria.',
     'No incluye levantamiento real, sombras, transporte validado ni factibilidad SEC.',
     'La produccion y el ahorro son orientativos, no ingresos ni rentabilidad garantizada.',
