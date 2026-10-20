@@ -51,7 +51,7 @@ test('flags inverter/BESS conflicts and preserves unpriced technical references 
   await inverter.selectOption('goodwe-dns-30')
   await battery.selectOption('byd-hvs-5-1')
   await expect(page.getByText(/REVISIÓN CRÍTICA \/ NO APTO EN ESTA CONFIGURACIÓN/)).toBeVisible()
-  await page.getByRole('button',{name:/Híbrido/}).click()
+  await page.getByRole('button',{name:'Híbrido Red + baterías',exact:true}).click()
   await expect(page.getByText(/El inversor conectado a red no incluye interfaz de batería/)).toBeVisible()
   await inverter.selectOption('goodwe-eh-5000')
   await expect(page.getByText(/Los rangos de tensión de batería e inversor coinciden/)).toBeVisible()
