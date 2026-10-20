@@ -6,6 +6,7 @@ export interface QuotePdfSnapshot {
   annualGenerationKwh:number
   generationSource:'manual'|'pvgis'
   locationLabel?:string
+  moduleReference?:string
   createdOn?:Date
 }
 
@@ -52,6 +53,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
     ['Tipo de sistema',kind],
     ['Dimension estimada',number(budget.systemKwp)+' kWp / '+budget.moduleCount+' modulos'],
     ['Potencia nominal por modulo',number(budget.modulePowerWp)+' Wp'],
+    ['Referencia de modulo (no precio)',normal(snapshot.moduleReference??'Modulo generico')],
     ['Baterias incluidas',number(budget.installedBatteryNominalKwh)+' kWh nominales'],
     ['Consumo mensual declarado',number(snapshot.monthlyConsumptionKwh)+' kWh'],
     ['Generacion anual estimada',number(snapshot.annualGenerationKwh)+' kWh'],

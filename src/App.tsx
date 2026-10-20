@@ -10,6 +10,8 @@ import type { SolarResource } from './lib/pvgis'
 import { SolarResourcePanel } from './components/SolarResourcePanel'
 import { HourlySimulationPanel } from './components/HourlySimulationPanel'
 import { QuotePanel } from './components/QuotePanel'
+import { EquipmentPanel } from './components/EquipmentPanel'
+import {moduleById,type ModuleId} from './lib/equipment'
 
 type ConsumptionMode = 'bill' | 'kwh'
 type Step = 0 | 1 | 2
@@ -56,6 +58,8 @@ export default function App() {
   const [exportTariff, setExportTariff] = useState(75)
   const [commune, setCommune] = useState('')
   const [area, setArea] = useState(32)
+  const [moduleId,setModuleId] = useState<ModuleId>('generic-550')
+  const selectedModule = moduleById(moduleId)
   const [roof, setRoof] = useState('Zinc / metálica')
   const [orientation, setOrientation] = useState<Orientation>('N')
   const [systemType, setSystemType] = useState<SystemType>('on-grid')
@@ -68,15 +72,15 @@ export default function App() {
   const result = useMemo(() => calculateSolar({
     monthlyConsumptionKwh: monthlyKwh,
     usableRoofAreaM2: area,
-    modulePowerWp: 550,
-    moduleAreaM2: 2.6,
+    modulePowerWp: selectedModule.powerWp,
+    moduleAreaM2: selectedModule.budgetAreaM2,
     referenceYieldKwhPerKwpYear: yieldRef,
     lossesPct: losses,
     orientation,
     systemType,
     retailTariffClpKwh: retailTariff,
     exportTariffClpKwh: exportTariff,
-  }, solarResource), [monthlyKwh, area, yieldRef, losses, orientation, systemType, retailTariff, exportTariff, solarResource])
+  }, solarResource), [monthlyKwh, area, selectedModule.powerWp, selectedModule.budgetAreaM2, yieldRef, losses, orientation, systemType, retailTariff, exportTariff, solarResource])
 
   function goTo(next: Step) {
     setStep(next)
@@ -85,7 +89,7 @@ export default function App() {
   function reset() {
     setStep(0)
     setMode('bill'); setBill(90000); setConsumption(410); setRetailTariff(220)
-    setExportTariff(75); setCommune(''); setArea(32); setRoof('Zinc / metálica')
+    setExportTariff(75); setCommune(''); setArea(32); setModuleId('generic-550'); setRoof('Zinc / metálica')
     setOrientation('N'); setSystemType('on-grid'); setYieldRef(1700); setLosses(17)
     setSolarResource(null)
     setShowAdvanced(false)
@@ -98,7 +102,7 @@ export default function App() {
       <div className="topbar-inner">
         <button type="button" className="logo-button" onClick={reset} aria-label="Volver al inicio"><Logo /></button>
         <div className="nav-right">
-          <span className="prototype-pill"><span className="online-dot" /> PROTOTIPO 0.5</span>
+          <span className="prototype-pill"><span className="online-dot" /> PROTOTIPO 0.6</span>
           <button type="button" className="nav-link" onClick={() => document.getElementById('metodologia')?.scrollIntoView({ behavior: 'smooth' })}>Metodología <ChevronRight size={14}/></button>
         </div>
       </div>
@@ -187,6 +191,7 @@ export default function App() {
                     <div className="compact-input select-wrap"><Compass size={17}/><select aria-label="Orientación del techo" value={orientation} onChange={e => { setOrientation(e.target.value as Orientation); setSolarResource(null) }}>{orientationLabels.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select></div>
                   </FormField>
                 </div>
+                <EquipmentPanel moduleId={moduleId} onModuleChange={setModuleId} moduleCount={result.modules} systemType={systemType}/>
                 <SolarResourcePanel resource={solarResource} onResourceChange={setSolarResource} orientation={orientation} lossesPct={losses} />
                 <FormField title="¿Qué tipo de sistema necesitas?">
                   <div className="system-grid">{options.map(o => {const Icon=o.icon; return <button type="button" key={o.value} className={'system-option ' + (systemType === o.value ? 'selected' : '')} aria-pressed={systemType === o.value} onClick={() => setSystemType(o.value)}><Icon size={23}/><strong>{o.name}</strong><small>{o.caption}</small>{systemType === o.value && <span className="system-check"><Check size={14}/></span>}</button>})}</div>
@@ -223,7 +228,7 @@ export default function App() {
                   : 'Sin irradiación por ubicación; puedes ingresar coordenadas en el paso 2.'}</span></div>
               </div>
               <div className="result-main">
-                <div className="result-hero-number"><span>POTENCIA ESTIMADA</span><div><strong>{decimal(result.systemKwp, 2)}</strong> <em>kWp</em></div><small>{result.modules} módulos de 550 Wp considerados</small></div>
+                <div className="result-hero-number"><span>POTENCIA ESTIMADA</span><div><strong>{decimal(result.systemKwp, 2)}</strong> <em>kWp</em></div><small>{result.modules} módulos de {selectedModule.powerWp} Wp considerados · {selectedModule.model}</small></div>
                 <div className="result-meter"><Sun size={48}/><span>Una nueva forma de mirar tu energía.</span></div>
               </div>
               <div className="metrics-grid">
@@ -255,7 +260,8 @@ export default function App() {
               <QuotePanel
                 systemType={systemType}
                 moduleCount={result.modules}
-                modulePowerWp={550}
+                modulePowerWp={selectedModule.powerWp}
+                moduleReference={selectedModule.model}
                 estimatedBatteryKwh={result.estimatedBatteryNominalKwh}
                 monthlyConsumptionKwh={monthlyKwh}
                 annualGenerationKwh={result.annualGenerationKwh}
@@ -275,10 +281,10 @@ export default function App() {
             <div className="feature-card"><span className="feature-icon"><BatteryCharging size={23}/></span><h4>Compara opciones</h4><p>Explora on-grid, híbrido y off-grid sin confundir una estimación rápida con una ingeniería completa.</p></div>
             <div className="feature-card"><span className="feature-icon"><ShieldCheck size={23}/></span><h4>Privacidad desde el inicio</h4><p>El cálculo manual funciona en tu navegador. Las coordenadas se envían a PVGIS solo cuando solicitas una consulta voluntaria.</p></div>
           </div>
-          <div className="roadmap-line"><span><span className="roadmap-dot"/> DISPONIBLE: SIMULADOR PRELIMINAR</span><span>CATÁLOGO DEMO Y PDF · PRÓXIMAMENTE: EQUIPOS Y PRECIOS VERIFICADOS</span></div>
+          <div className="roadmap-line"><span><span className="roadmap-dot"/> DISPONIBLE: SIMULADOR PRELIMINAR</span><span>MÓDULO CON FICHA TÉCNICA · PRECIOS DEMO · SEC PENDIENTE</span></div>
         </section>
       </div>
     </main>
-    <footer className="site-footer"><div className="page-container footer-inner"><Logo/><span>© 2026 ORBI Ecosystem · Tecnología al servicio de tu energía.</span><span className="footer-version">ORBI SOLAR QUOTE v0.5</span></div></footer>
+    <footer className="site-footer"><div className="page-container footer-inner"><Logo/><span>© 2026 ORBI Ecosystem · Tecnología al servicio de tu energía.</span><span className="footer-version">ORBI SOLAR QUOTE v0.6</span></div></footer>
   </div>
 }
