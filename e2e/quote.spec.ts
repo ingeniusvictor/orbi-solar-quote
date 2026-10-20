@@ -35,7 +35,7 @@ test('selects manufacturer-backed module, recalculates quote and downloads valid
   expect(pdfText).toContain('Trina Solar')
   expect(pdfText).toContain('NO ES COTIZACION')
   const info=execFileSync('pdfinfo',[artifact],{encoding:'utf8'})
-  expect(info).toMatch(/Pages:\s+[1-9]/)
+  expect(info).toMatch(/Pages:\s+1(?:\s|$)/)
   const png=join(testInfo.outputDir,'orbi-result.png')
   await page.screenshot({path:png,fullPage:true,animations:'disabled'})
   await testInfo.attach('PDF-de-demostracion',{path:artifact,contentType:'application/pdf'})

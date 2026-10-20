@@ -24,3 +24,20 @@ describe('SQ-04 PDF safety and generation',()=>{
     expect(pdf.output().startsWith('%PDF-')).toBe(true)
   })
 })
+
+describe('SQ-04B A4 typography and pagination',()=>{
+  it('fits the tested seven-line residential quote on a single A4 page',()=>{
+    const quote=calculateQuote({
+      systemType:'on-grid',moduleCount:7,modulePowerWp:450,
+      batteryTargetKwh:0,marginPct:10,vatPct:19,
+      overrides:{module:155000},
+    })
+    const document=makeQuotePdf(quote,{
+      monthlyConsumptionKwh:409.09,annualGenerationKwh:4444.65,
+      generationSource:'manual',
+      moduleReference:'Trina Solar Vertex S+ TSM-450 NEG9R.28',
+      createdOn:new Date('2026-10-20T12:00:00Z'),
+    })
+    expect(document.getNumberOfPages()).toBe(1)
+  })
+})
