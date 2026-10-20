@@ -34,3 +34,7 @@ Más información: [Metodología PVGIS](docs/PVGIS_INTEGRATION.md).
 El simulador incluye un balance energético horario de **365 días sintéticos**. Distribuye la producción mensual en un día solar representativo y permite seleccionar perfiles de demanda diurno/equilibrado/vespertino. Para sistemas híbridos o aislados configura capacidad de batería, potencia de carga y descarga. No utiliza todavía series PVGIS horarias, consumos del medidor, degradación de batería ni la liquidación real de Net Billing. Un caso off-grid puede mostrar energía no suministrada: **no es una garantía de autonomía**.
 
 Detalle: [Método SQ-03](docs/SQ03_HOURLY_MODEL.md).
+
+## SQ-03B — Generación horaria PVGIS (histórica)
+
+Tras consultar PVGIS por coordenadas, el usuario puede solicitar la serie modelada de **8.760 horas de 2023** (`seriescalc`). La generación solar horaria proviene de PVGIS cuando el servicio responde; el perfil de demanda sigue siendo hipotético. Si falla la llamada, la UI permanece en modo sintético claramente señalado. Detalles: [SQ-03B](docs/SQ03B_PVGIS_HOURLY.md).
