@@ -1,6 +1,6 @@
 import {
   buildPvgisUrl, parsePvgisResponse, parseSolarResourceRequest,
-} from '../src/lib/pvgis'
+} from '../src/lib/pvgis.ts'
 
 type Request = {
   method?: string
