@@ -59,3 +59,42 @@ main{position:relative}.background-glow{position:absolute;top:15px;left:55%;widt
 .resource-source-icon{color:#a7c3ca}.resource-source-live .resource-source-icon{color:#54edc7}
 .resource-source-strip strong{display:block;font-size:12px}.resource-source-strip span:not(.resource-source-icon){display:block;color:#93b2bc;font-size:10px;line-height:1.6;margin-top:3px}
 @media(max-width:700px){.resource-panel{padding:15px}.resource-fields{grid-template-columns:1fr}.resource-title{flex-wrap:wrap}.resource-source-strip{align-items:flex-start}}
+
+/* SQ-03: synthetic hourly model — intentionally independent of PVGIS data source */
+.hourly-panel{margin-top:19px;border:1px solid #306357;border-radius:14px;padding:23px;background:linear-gradient(145deg,#103332,#0c2130 78%);color:#e3f2ed}
+.hourly-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:13px;margin-bottom:20px}
+.hourly-heading h4{font-family:Manrope,sans-serif;font-size:19px;margin:0 0 7px}
+.hourly-heading p{font-size:12px;line-height:1.7;color:#9fc0c0;margin:0}
+.hourly-tag{border:1px solid #4e8f7d;color:#89dfc4;padding:8px 10px;white-space:nowrap;font-size:9px;font-weight:800;border-radius:8px;letter-spacing:.7px}
+.hourly-settings{display:flex;flex-direction:column;gap:17px;background:#0b202a;border:1px solid #34515b;border-radius:12px;padding:17px}
+.hourly-settings label{display:flex;flex-direction:column;gap:8px;font-weight:700;color:#bdd8da;font-size:11px}
+.hourly-settings select,.hourly-field{border-radius:9px;min-height:43px;background:#102a36;border:1px solid #3c5964;color:#f5f9f7;padding:10px 12px;font-size:12px;max-width:450px}
+.hourly-settings select{cursor:pointer}.hourly-battery-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.hourly-field{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.hourly-field input{min-width:0;flex:1;background:transparent;color:#fff;border:0;outline:0;font-weight:700}
+.hourly-field span{color:#90b7c1;font-size:11px}
+.hourly-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:18px}
+.hourly-summary>div{padding:18px;background:#0a2630;border:1px solid #36575e;border-radius:12px;min-width:0}
+.hourly-summary>div>span{display:flex;align-items:center;gap:7px;font-size:11px;color:#a8cbc8;font-weight:700}
+.hourly-summary>div>span svg{flex:none;color:#55e4c1}
+.hourly-summary strong{display:block;font-family:Manrope,sans-serif;font-size:clamp(18px,2vw,23px);letter-spacing:-.6px;color:#eff8f6;margin:13px 0 4px;overflow-wrap:anywhere}
+.hourly-summary small{display:block;font-size:10px;line-height:1.6;color:#8aa7b2}
+.hourly-flow{padding:22px 0 8px}.hourly-flow-heading{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px}
+.hourly-flow-heading span{color:#99bcb9}
+.hourly-stacked{margin:13px 0 11px;height:17px;display:flex;overflow:hidden;border-radius:12px;background:#203c4b}
+.hourly-stacked span{display:block;height:100%;transition:width .2s}
+.hourly-legend{display:flex;gap:20px;flex-wrap:wrap;color:#accac8;font-size:10px}
+.hourly-legend span{display:flex;align-items:center;gap:7px}
+.hourly-legend i{display:inline-block;width:9px;height:9px;border-radius:3px}
+.legend-green{background:#41e5bf}.legend-blue{background:#6a8faf}.legend-orange{background:#ed9b63}
+.hourly-economics{margin-top:14px;border-top:1px solid #39545b;padding-top:17px}
+.hourly-economics>div{display:flex;justify-content:space-between;align-items:center;gap:18px}
+.hourly-economics span{font-size:12px;font-weight:700;color:#add5cb}
+.hourly-economics strong{color:#6feac9;font-family:Manrope,sans-serif;font-size:24px}
+.hourly-economics p,.hourly-minor{margin:9px 0 0;font-size:11px;color:#9dbbc2;line-height:1.75}
+.hourly-alert{margin-top:13px;display:flex;align-items:flex-start;gap:11px;border:1px solid #856643;border-radius:10px;padding:15px;background:#3b2f28;font-size:11px;line-height:1.8;color:#f8d0a4}
+.hourly-alert svg{flex:none}
+.hourly-source{margin-top:19px;display:flex;gap:10px;align-items:flex-start;border-top:1px solid #35545d;padding-top:16px;color:#a0c0c5}
+.hourly-source svg{flex:none}.hourly-source p{font-size:10px;line-height:1.7;margin:0}
+@media(max-width:750px){.hourly-panel{padding:17px}.hourly-summary{grid-template-columns:1fr}.hourly-summary>div{padding:13px}.hourly-heading{flex-direction:column}.hourly-battery-fields{grid-template-columns:1fr}.hourly-economics>div{flex-direction:column;align-items:flex-start;gap:6px}}
+@media print{.hourly-panel,.hourly-summary>div,.hourly-settings,.hourly-economics{background:#fff!important;color:#111!important;border-color:#aaa}.hourly-heading p,.hourly-source p,.hourly-summary small,.hourly-economics p{color:#333!important}}

@@ -8,11 +8,11 @@ import {
 import { calculateSolar, type Orientation, type SystemType } from './lib/solar'
 import type { SolarResource } from './lib/pvgis'
 import { SolarResourcePanel } from './components/SolarResourcePanel'
+import { HourlySimulationPanel } from './components/HourlySimulationPanel'
 
 type ConsumptionMode = 'bill' | 'kwh'
 type Step = 0 | 1 | 2
 
-const money = (n: number) => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(Math.round(n))
 const integer = (n: number) => new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 }).format(Math.round(n))
 const decimal = (n: number, digits = 1) => new Intl.NumberFormat('es-CL', { maximumFractionDigits: digits }).format(n)
 const safeNumber = (raw: string) => Number.isFinite(Number(raw)) ? Math.max(0, Number(raw)) : 0
@@ -97,7 +97,7 @@ export default function App() {
       <div className="topbar-inner">
         <button type="button" className="logo-button" onClick={reset} aria-label="Volver al inicio"><Logo /></button>
         <div className="nav-right">
-          <span className="prototype-pill"><span className="online-dot" /> PROTOTIPO 0.1</span>
+          <span className="prototype-pill"><span className="online-dot" /> PROTOTIPO 0.3</span>
           <button type="button" className="nav-link" onClick={() => document.getElementById('metodologia')?.scrollIntoView({ behavior: 'smooth' })}>Metodología <ChevronRight size={14}/></button>
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function App() {
             <div className="eyebrow"><span className="eyebrow-line" /> EL FUTURO DE TU ENERGÍA EMPIEZA AQUÍ</div>
             <h1>Tu techo tiene <span>potencial.</span><br />Descubre cuánto.</h1>
             <p>Calcula tu instalación solar en minutos. Sin registro, sin letra chica y con los supuestos siempre a la vista.</p>
-            <div className="hero-trust"><span><Check size={15}/> Sin costo</span><span><Check size={15}/> Para Chile</span><span><Check size={15}/> Sin datos personales</span></div>
+            <div className="hero-trust"><span><Check size={15}/> Sin costo</span><span><Check size={15}/> Para Chile</span><span><Check size={15}/> Sin registro</span></div>
           </div>
           <div className="hero-art" aria-hidden="true">
             <div className="orbit orbit-one" /><div className="orbit orbit-two" />
@@ -228,9 +228,9 @@ export default function App() {
               <div className="metrics-grid">
                 <div className="metric"><span><Zap size={17}/> Generación al año</span><strong>{integer(result.annualGenerationKwh)}</strong><small>kWh estimados</small></div>
                 <div className="metric"><span><TrendingUp size={17}/> Generación promedio</span><strong>{integer(result.monthlyGenerationKwh)}</strong><small>kWh / mes</small></div>
-                <div className="metric"><span>{systemType === 'on-grid' ? <Leaf size={17}/> : <BatteryCharging size={17}/>} {systemType === 'on-grid' ? 'Valor anual ilustrativo' : 'Batería nominal ilustrativa'}</span><strong>{systemType === 'on-grid' ? money(result.annualValueClp ?? 0) : decimal(result.estimatedBatteryNominalKwh ?? 0) + ' kWh'}</strong><small>{systemType === 'on-grid' ? 'Autoconsumo + inyección (supuestos)' : 'No es un diseño definitivo'}</small></div>
+                <div className="metric"><span>{systemType === 'on-grid' ? <Leaf size={17}/> : <BatteryCharging size={17}/>} {systemType === 'on-grid' ? 'Simulación de autoconsumo' : 'Batería inicial sugerida'}</span><strong>{systemType === 'on-grid' ? 'Por horarios' : decimal(result.estimatedBatteryNominalKwh ?? 0) + ' kWh'}</strong><small>{systemType === 'on-grid' ? 'Ver resultados horarios más abajo' : 'Capacidad inicial editable; no es ingeniería'}</small></div>
               </div>
-              {systemType === 'hybrid' && <div className="context-band"><BatteryCharging size={19}/><span>Valor económico anual ilustrativo: <b>{money(result.annualValueClp ?? 0)}</b>. No considera inversión ni degradación de baterías.</span></div>}
+              {systemType === 'hybrid' && <div className="context-band"><BatteryCharging size={19}/><span>El balance horario sintético permite ajustar la batería y valorar separadamente la energía importada y exportada. Consulta el desglose más abajo.</span></div>}
               {systemType === 'off-grid' && <div className="context-band"><CircleHelp size={19}/><span>La viabilidad off-grid requiere un perfil horario de cargas, días críticos de invierno y verificación de autonomía. No se proyecta ahorro monetario.</span></div>}
               {result.roofLimited && <div className="warning-box"><Info size={19}/> Superficie limitada: cabrían aproximadamente {result.maximumModules} módulos con esta hipótesis de área. El objetivo preliminar requeriría {result.targetModules}. No se han validado separaciones ni obstáculos.</div>}
               {result.modules === 0 && <div className="warning-box"><Info size={19}/> Con estos parámetros no resulta posible dimensionar módulos. Revisa el consumo, la superficie útil y el rendimiento de referencia.</div>}
@@ -240,7 +240,16 @@ export default function App() {
                   {result.monthlyProfileKwh.map((value, index) => <div className="chart-month" key={months[index]} title={months[index] + ': ' + integer(value) + ' kWh'}><div className="chart-bar-track"><div className="chart-bar" style={{ height: (value > 0 ? Math.max(2, value / maxMonth * 100) : 0) + '%' }}/></div><span>{months[index]}</span></div>)}
                 </div>
               </div>
-              <div className="result-disclaimer"><ShieldCheck size={20}/><div><b>Transparencia ante todo.</b><p>Estos resultados son orientativos. {solarResource ? 'La irradiación y geometría simulada provienen de PVGIS, pero no hay evaluación de sombras locales ni geometría real del techo. ' : 'Se usan factores y un perfil estacional genéricos; no se consultó radiación por ubicación. '}Los supuestos de autoconsumo y baterías siguen siendo aproximados; no hay simulación de carga horaria ni inspección estructural. No es una cotización comercial ni un proyecto de ingeniería.</p></div></div>
+              <HourlySimulationPanel
+                monthlyGenerationKwh={result.monthlyProfileKwh}
+                monthlyConsumptionKwh={monthlyKwh}
+                systemType={systemType}
+                defaultBatteryNominalKwh={result.estimatedBatteryNominalKwh}
+                retailTariffClpKwh={retailTariff}
+                exportTariffClpKwh={exportTariff}
+                productionSource={result.calculationSource}
+              />
+              <div className="result-disclaimer"><ShieldCheck size={20}/><div><b>Transparencia ante todo.</b><p>Estos resultados son orientativos. {solarResource ? 'La irradiación y geometría simulada provienen de PVGIS, pero no hay evaluación de sombras locales ni geometría real del techo. ' : 'Se usan factores y un perfil estacional genéricos; no se consultó radiación por ubicación. '}El balance de consumo y baterías utiliza distribuciones horarias hipotéticas, no consumos medidos ni un año meteorológico horario. Sin visita ni inspección estructural. No es una cotización comercial, una liquidación real de Net Billing ni un proyecto de ingeniería.</p></div></div>
               <div className="wizard-footer result-actions"><button type="button" className="button-back" onClick={() => goTo(1)}><ArrowLeft size={18}/> Editar vivienda</button><div className="result-action-right"><button type="button" className="button-outline" onClick={() => window.print()}><FileText size={17}/> Imprimir resumen</button><button type="button" className="button-primary" onClick={reset}><RotateCcw size={17}/> Nueva simulación</button></div></div>
             </>}
           </div>
@@ -253,10 +262,10 @@ export default function App() {
             <div className="feature-card"><span className="feature-icon"><BatteryCharging size={23}/></span><h4>Compara opciones</h4><p>Explora on-grid, híbrido y off-grid sin confundir una estimación rápida con una ingeniería completa.</p></div>
             <div className="feature-card"><span className="feature-icon"><ShieldCheck size={23}/></span><h4>Privacidad desde el inicio</h4><p>El cálculo manual funciona en tu navegador. Las coordenadas se envían a PVGIS solo cuando solicitas una consulta voluntaria.</p></div>
           </div>
-          <div className="roadmap-line"><span><span className="roadmap-dot"/> DISPONIBLE: SIMULADOR PRELIMINAR</span><span>PVGIS OPCIONAL · PRÓXIMAMENTE: SOMBRAS · EQUIPOS · PRECIOS · PDF</span></div>
+          <div className="roadmap-line"><span><span className="roadmap-dot"/> DISPONIBLE: SIMULADOR PRELIMINAR</span><span>DESPACHO HORARIO SINTÉTICO · PRÓXIMAMENTE: DATOS HORARIOS REALES · EQUIPOS · PRECIOS</span></div>
         </section>
       </div>
     </main>
-    <footer className="site-footer"><div className="page-container footer-inner"><Logo/><span>© 2026 ORBI Ecosystem · Tecnología al servicio de tu energía.</span><span className="footer-version">ORBI SOLAR QUOTE v0.2</span></div></footer>
+    <footer className="site-footer"><div className="page-container footer-inner"><Logo/><span>© 2026 ORBI Ecosystem · Tecnología al servicio de tu energía.</span><span className="footer-version">ORBI SOLAR QUOTE v0.3</span></div></footer>
   </div>
 }
