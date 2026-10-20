@@ -1,6 +1,6 @@
-# ORBI Solar Quote — metodología provisional v0.1
+# ORBI Solar Quote — metodología provisional v0.2
 
-**Estado:** prototipo orientativo. Sin irradiación satelital en vivo, análisis de sombras, perfil horario ni ingeniería aprobada.
+**Estado:** prototipo orientativo. Consulta voluntaria a PVGIS v5.3 si se ingresan coordenadas; sin análisis de sombras de cubierta, perfil horario ni ingeniería aprobada. La consulta real no se ha validado aún contra producción en vivo.
 
 ## Cálculo energético
 
@@ -10,7 +10,8 @@
 - Objetivo de dimensionamiento: 90% de la demanda anual on-grid, 100% híbrido, 125% off-grid. El 125% no garantiza autonomía en invierno.
 - Paneles máximos = piso(superficie útil / m² por módulo), sin validar separaciones, cargas estructurales, pasillos ni distancias a bordes.
 - Paneles mostrados = mínimo(paneles objetivo, paneles máximos).
-- Curva mensual: perfil ilustrativo normalizado del hemisferio sur, **no** una serie de irradiación real.
+- Curva mensual manual: perfil ilustrativo normalizado del hemisferio sur. Con PVGIS: 12 meses reales del modelo climático PVGIS para orientación, inclinación y pérdidas declaradas; no se duplican esos factores al dimensionar.
+- Ver `docs/PVGIS_INTEGRATION.md` para supuestos y límites de los datos geográficos.
 
 ## Estimación comercial preliminar
 

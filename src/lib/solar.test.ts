@@ -1,3 +1,4 @@
+import type { SolarResource } from './pvgis'
 import { describe, expect, it } from 'vitest'
 import { calculateSolar, type SolarInputs } from './solar'
 
@@ -56,5 +57,26 @@ describe('calculateSolar', () => {
       result.annualSelfConsumptionKwh! * base.retailTariffClpKwh +
       result.annualExportKwh! * base.exportTariffClpKwh
     )
+  })
+})
+
+describe('geolocated resource in solar engine', () => {
+  const pvgis: SolarResource = {
+    source: 'PVGIS v5.3 / PVcalc',
+    latitude: -34.17, longitude: -70.74, tiltDeg: 25,
+    aspectDeg: 180, lossesPct: 17, radiationDatabase: 'PVGIS-ERA5',
+    monthlyYieldKwhPerKwp: Array.from({length:12}, () => 100),
+    annualYieldKwhPerKwp: 1200,
+  }
+  it('uses provider monthly values, without second orientation or loss correction', () => {
+    const north = calculateSolar({...base, usableRoofAreaM2: 5, orientation: 'N', lossesPct: 17}, pvgis)
+    const south = calculateSolar({...base, usableRoofAreaM2: 5, orientation: 'S', lossesPct: 40}, pvgis)
+    expect(north.annualGenerationKwh).toBeCloseTo(660)
+    expect(south.annualGenerationKwh).toBeCloseTo(north.annualGenerationKwh)
+    expect(north.calculationSource).toBe('pvgis')
+    expect(north.monthlyProfileKwh.every(month => Math.abs(month - 55) < 1e-8)).toBe(true)
+  })
+  it('retains explicit manual fallback', () => {
+    expect(calculateSolar(base).calculationSource).toBe('manual')
   })
 })

@@ -3,6 +3,8 @@
  * NOT a bankable yield study, SEC-approved engineering design, or Net Billing settlement.
  * All factors are user-adjustable assumptions, not live climate/utility data.
  */
+import type { SolarResource } from './pvgis'
+
 export type SystemType = 'on-grid' | 'hybrid' | 'off-grid'
 export type Orientation = 'N' | 'NE' | 'NW' | 'E' | 'W' | 'S'
 
@@ -33,6 +35,7 @@ export interface SolarResults {
   estimatedBatteryNominalKwh: number | null
   roofLimited: boolean
   monthlyProfileKwh: number[]
+  calculationSource: 'pvgis' | 'manual'
 }
 
 export const ORIENTATIONS: Record<Orientation, number> = {
@@ -58,7 +61,7 @@ function finiteNonNegative(value: number): number {
   return Number.isFinite(value) ? Math.max(0, value) : 0
 }
 
-export function calculateSolar(input: SolarInputs): SolarResults {
+export function calculateSolar(input: SolarInputs, solarResource?: SolarResource | null): SolarResults {
   const monthlyConsumptionKwh = finiteNonNegative(input.monthlyConsumptionKwh)
   const annualConsumptionKwh = monthlyConsumptionKwh * 12
   const roofArea = finiteNonNegative(input.usableRoofAreaM2)
@@ -67,7 +70,9 @@ export function calculateSolar(input: SolarInputs): SolarResults {
   const referenceYield = finiteNonNegative(input.referenceYieldKwhPerKwpYear)
   const performanceFactor = 1 - Math.min(100, finiteNonNegative(input.lossesPct)) / 100
   const orientationFactor = ORIENTATIONS[input.orientation] ?? 1
-  const perPanelYear = (modulePowerWp / 1000) * referenceYield * performanceFactor * orientationFactor
+  // PVGIS includes mounting geometry and losses: NEVER apply those manual factors again.
+  const perPanelYear = (modulePowerWp / 1000) *
+    (solarResource ? solarResource.annualYieldKwhPerKwp : referenceYield * performanceFactor * orientationFactor)
   const maximumModules = panelArea > 0 ? Math.floor(roofArea / panelArea) : 0
   const targetModules = perPanelYear > 0
     ? Math.ceil(annualConsumptionKwh * COVERAGE_TARGET[input.systemType] / perPanelYear)
@@ -77,7 +82,9 @@ export function calculateSolar(input: SolarInputs): SolarResults {
   const annualGenerationKwh = Math.max(0, modules * perPanelYear)
   const monthlyGenerationKwh = annualGenerationKwh / 12
   const totalShape = MONTHLY_SHAPE.reduce((a, b) => a + b, 0)
-  const monthlyProfileKwh = MONTHLY_SHAPE.map(weight => annualGenerationKwh * weight / totalShape)
+  const monthlyProfileKwh = solarResource
+    ? solarResource.monthlyYieldKwhPerKwp.map(yieldKwhPerKwp => yieldKwhPerKwp * systemKwp)
+    : MONTHLY_SHAPE.map(weight => annualGenerationKwh * weight / totalShape)
 
   // No off-grid economic claim without load profile, generator, outage and storage engineering.
   let annualSelfConsumptionKwh: number | null = null
@@ -111,5 +118,6 @@ export function calculateSolar(input: SolarInputs): SolarResults {
     estimatedBatteryNominalKwh,
     roofLimited: maximumModules < targetModules,
     monthlyProfileKwh,
+    calculationSource: solarResource ? 'pvgis' : 'manual',
   }
 }
