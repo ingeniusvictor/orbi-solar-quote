@@ -1,4 +1,4 @@
-# ORBI Solar Quote — metodología provisional v0.2
+# ORBI Solar Quote — metodología provisional v0.3
 
 **Estado:** prototipo orientativo. Consulta voluntaria a PVGIS v5.3 si se ingresan coordenadas; sin análisis de sombras de cubierta, perfil horario ni ingeniería aprobada. La consulta real no se ha validado aún contra producción en vivo.
 
@@ -39,3 +39,11 @@ Solo para on-grid/híbrido:
 6. Agregar validaciones de factibilidad eléctrica, estructural y visita a terreno.
 
 Los usuarios deben ver estas advertencias en la interfaz del MVP.
+
+## SQ-03 — Simulación horaria sintética
+
+Se añadió un despacho determinista a resolución de una hora para 365 días de un año no bisiesto. Cada mes se representa mediante días idénticos con una curva solar genérica, normalizada para respetar la energía mensual disponible (sea PVGIS PVcalc o manual). El usuario elige distribución horaria de consumo. El almacenamiento se rige por SOC mínimo del 20%, eficiencia de carga 95%, eficiencia de descarga 95% y límites de potencia declarados. No hay energía inicial gratuita: el SOC parte desde su reserva mínima.
+
+El módulo informa energía fotovoltaica directa, carga/descarga, importación, inyección, excedente desaprovechado, demanda no suministrada y pérdidas. Su desglose económico es una **valorización ilustrativa de kWh**, no factura Net Billing, y solo se muestra para redes on-grid/híbridas. Ver `docs/SQ03_HOURLY_MODEL.md`.
+
+Los antiguos cálculos heurísticos de ahorro en `calculateSolar` se mantienen como legado interno de SQ-01, pero **no se muestran como ahorro principal en pantalla**. El resumen principal ahora enlaza al análisis horario explícito. Se retirarán cuando se estabilice el nuevo contrato de resultados.

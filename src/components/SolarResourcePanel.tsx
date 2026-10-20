@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CheckCircle2, Globe2, Info, MapPin, RefreshCcw } from 'lucide-react'
 import type { Orientation } from '../lib/solar'
 import type { SolarResource } from '../lib/pvgis'
@@ -17,12 +17,26 @@ export function SolarResourcePanel({ resource, onResourceChange, orientation, lo
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const sequence = useRef(0)
+  const configSignature = orientation + ':' + lossesPct
+  const lastConfigSignature = useRef(configSignature)
+
+  // Discard pending responses if another roof orientation or loss assumption
+  // replaces the request configuration. Never reuse stale PVGIS results.
+  useEffect(() => {
+    if (lastConfigSignature.current === configSignature) return
+    lastConfigSignature.current = configSignature
+    sequence.current += 1
+    setPending(false)
+    setError('')
+    onResourceChange(null)
+  }, [configSignature, onResourceChange])
 
   const valid = latitude.trim() !== '' && longitude.trim() !== '' &&
     Number.isFinite(Number(latitude)) && Number.isFinite(Number(longitude)) &&
     Number(latitude) >= -56.5 && Number(latitude) <= -17 &&
     Number(longitude) >= -76.5 && Number(longitude) <= -66 &&
-    Number.isFinite(tiltDeg) && tiltDeg >= 0 && tiltDeg <= 90
+    Number.isFinite(tiltDeg) && tiltDeg >= 0 && tiltDeg <= 90 &&
+    lossesPct >= 0 && lossesPct <= 50
 
   function updateCoordinate(kind: 'lat' | 'lon', value: string) {
     sequence.current += 1
@@ -78,6 +92,7 @@ export function SolarResourcePanel({ resource, onResourceChange, orientation, lo
         <input type="number" min={0} max={90} step={1} aria-label="Inclinación del techo" value={tiltDeg} onChange={e => updateTilt(Number(e.target.value))}/>
       </label>
     </div>
+    {lossesPct > 50 && <div className="resource-error" role="alert"><Info size={16}/>PVGIS admite pérdidas declaradas de 0% a 50%. Ajusta este valor en los supuestos técnicos o continúa con el cálculo manual.</div>}
     <div className="resource-actions">
       <button type="button" onClick={load} disabled={!valid || pending} className="resource-load"><MapPin size={16}/>{pending ? 'Consultando PVGIS…' : resource ? 'Actualizar consulta' : 'Consultar recurso solar'}<RefreshCcw size={14}/></button>
       {resource && <span className="resource-ready"><CheckCircle2 size={16}/> Recurso obtenido: {Math.round(resource.annualYieldKwhPerKwp).toLocaleString('es-CL')} kWh/kWp/año</span>}
