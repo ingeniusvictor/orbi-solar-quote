@@ -21,7 +21,7 @@ Los cambios funcionales se trabajarán en ramas y pull requests. La rama princip
 
 ## Aviso técnico
 
-No se utilizarán datos reales de clientes en la etapa inicial. No hay conexión a sistemas de pago, geolocalización, Supabase ni APIs fotovoltaicas todavía.
+En esta etapa no hay cuentas, pagos, Supabase ni datos reales de clientes almacenados en una base de datos. La consulta voluntaria de coordenadas sí usa el backend de Vercel para llamar a PVGIS; no se solicita ubicación precisa del dispositivo ni se guarda una dirección en la aplicación. Antes del uso comercial hay que validar privacidad, límites de uso y resistencia ante abuso.
 
 ## SQ-02 — Datos solares por coordenadas
 

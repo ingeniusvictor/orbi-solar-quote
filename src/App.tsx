@@ -131,7 +131,7 @@ export default function App() {
               <h2>Tu simulación solar</h2>
               <p>Te guiaremos paso a paso para crear una primera estimación.</p>
             </div>
-            <span className="secure-label"><ShieldCheck size={17}/> Datos en tu navegador</span>
+            <span className="secure-label"><ShieldCheck size={17}/> Sin cuenta ni registro</span>
           </div>
           <div className="stepper" aria-label="Progreso">
             {(['Tu consumo', 'Tu vivienda', 'Tu resultado'] as const).map((label, idx) => (
