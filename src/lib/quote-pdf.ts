@@ -19,7 +19,6 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
   const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true})
   const W=210, pad=16
   const ink:[number,number,number]=[11,32,47]
-  const teal:[number,number,number]=[25,177,157]
   const muted:[number,number,number]=[77,96,105]
   const today=snapshot.createdOn??new Date()
   const date=today.toLocaleDateString('es-CL',{year:'numeric',month:'2-digit',day:'2-digit'})

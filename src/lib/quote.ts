@@ -63,7 +63,6 @@ export interface QuoteBudget {
   grandTotalClp:number
   costClpPerWp:number|null
 }
-const entries = Object.fromEntries(DEMO_PRICE_BOOK.map(x=>[x.id,x])) as Record<PriceKey,PriceEntry>
 
 function nonNegative(name:string,value:number,limit:number) {
   if(!Number.isFinite(value)||value<0||value>limit)throw new RangeError('Dato inválido: '+name)
