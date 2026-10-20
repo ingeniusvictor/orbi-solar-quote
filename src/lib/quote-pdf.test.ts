@@ -41,3 +41,21 @@ describe('SQ-04B A4 typography and pagination',()=>{
     expect(document.getNumberOfPages()).toBe(1)
   })
 })
+
+describe('SQ-04C hybrid reference PDF pagination',()=>{
+  it('fits an eight-row hybrid DEMO with technical references and disclaimers on one A4',()=>{
+    const quote=calculateQuote({
+      systemType:'hybrid',moduleCount:8,modulePowerWp:450,
+      batteryTargetKwh:11,marginPct:10,vatPct:19,
+    })
+    const output=makeQuotePdf(quote,{
+      monthlyConsumptionKwh:410,annualGenerationKwh:5050,
+      generationSource:'manual',
+      moduleReference:'Trina Solar Vertex S+ TSM-450 NEG9R.28',
+      equipmentReference:'GoodWe GW5000-EH / BYD Battery-Box Premium HVS 10.2',
+      createdOn:new Date('2026-10-20T12:00:00Z'),
+    })
+    expect(output.getNumberOfPages()).toBe(1)
+    expect(output.output().startsWith('%PDF-')).toBe(true)
+  })
+})

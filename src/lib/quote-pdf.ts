@@ -96,7 +96,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
     pdf.text(clp(line.unitNetClp),153,y,{align:'right'})
     pdf.setTextColor(...ink)
     pdf.text(clp(line.totalNetClp),W-pad-2,y,{align:'right'})
-    y+=7
+    y+=6
   }
   y+=4
   pdf.setDrawColor(205,217,220)
