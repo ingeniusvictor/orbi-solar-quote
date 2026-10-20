@@ -261,7 +261,7 @@ export default function App() {
                 systemType={systemType}
                 moduleCount={result.modules}
                 modulePowerWp={selectedModule.powerWp}
-                moduleReference={selectedModule.model}
+                moduleReference={selectedModule.manufacturer + ' ' + selectedModule.model}
                 estimatedBatteryKwh={result.estimatedBatteryNominalKwh}
                 monthlyConsumptionKwh={monthlyKwh}
                 annualGenerationKwh={result.annualGenerationKwh}

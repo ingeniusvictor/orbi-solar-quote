@@ -5,7 +5,7 @@ export default defineConfig({
   timeout:60000,
   expect:{timeout:10000},
   retries:process.env.CI?1:0,
-  reporter:process.env.CI?[['line'],['html',{open:'never',outputFolder:'test-results/report'}]]:'list',
+  reporter:process.env.CI?[['line'],['html',{open:'never',outputFolder:'playwright-report'}]]:'list',
   use:{baseURL:'http://127.0.0.1:4173',trace:'retain-on-failure'},
   projects:[
     {name:'desktop-chromium',use:{...devices['Desktop Chrome'],acceptDownloads:true}},
