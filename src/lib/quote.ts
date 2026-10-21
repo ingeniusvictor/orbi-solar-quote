@@ -38,6 +38,7 @@ export interface QuoteInput {
   vatPct: number
   overrides?: PriceOverrides
   supplierEquipment?:SupplierConfiguration
+  supplierSourceUnmodified?:boolean
 }
 export interface QuoteLine {
   id:PriceKey
@@ -127,7 +128,7 @@ export function calculateQuote(input:QuoteInput):QuoteBudget {
       id:entry.id,label,unit:entry.unit,quantity,
       unitNetClp,
       totalNetClp:money(quantity*unitNetClp),
-      priceOrigin:input.overrides?.[entry.id]!==undefined ? 'edited'
+      priceOrigin:input.overrides?.[entry.id]!==undefined || (supplierGross!==undefined && input.supplierSourceUnmodified===false) ? 'edited'
         :supplierGross!==undefined ? 'enertik-snapshot' : 'synthetic',
     })
   }

@@ -63,7 +63,12 @@ export function QuotePanel(props:Props){
     systemType:props.systemType,moduleCount:props.moduleCount,
     modulePowerWp:props.modulePowerWp,batteryTargetKwh:batteryTarget,
     marginPct,vatPct,overrides,supplierEquipment:usingSupplier?equipment:undefined,
-  }),[props.systemType,props.moduleCount,props.modulePowerWp,batteryTarget,marginPct,vatPct,overrides,usingSupplier,equipment])
+    supplierSourceUnmodified:usingSupplier && equipment.provider===presetByTier(tier).configuration.provider &&
+      equipment.inverterModel===presetByTier(tier).configuration.inverterModel &&
+      equipment.batteryModel===presetByTier(tier).configuration.batteryModel &&
+      equipment.inverterGrossClp===presetByTier(tier).configuration.inverterGrossClp &&
+      equipment.batteryGrossClp===presetByTier(tier).configuration.batteryGrossClp,
+  }),[props.systemType,props.moduleCount,props.modulePowerWp,batteryTarget,marginPct,vatPct,overrides,usingSupplier,equipment,tier])
 
   async function download() {
     setDownloadError('')
