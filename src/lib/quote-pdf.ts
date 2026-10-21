@@ -7,6 +7,7 @@ export interface QuotePdfSnapshot {
   generationSource:'manual'|'pvgis'
   locationLabel?:string
   moduleReference?:string
+  supplierReference?:string
   createdOn?:Date
 }
 
@@ -59,6 +60,7 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
     ['Generacion anual estimada',number(snapshot.annualGenerationKwh)+' kWh'],
     ['Fuente de generacion',snapshot.generationSource==='pvgis'?'PVGIS PVcalc mensual':'Modelo manual ilustrativo'],
   ]
+  if(snapshot.supplierReference?.trim())meta.push(['Proveedor equipos (no oferta)',normal(snapshot.supplierReference)])
   if(snapshot.locationLabel?.trim())meta.push(['Ubicacion declarada',normal(snapshot.locationLabel)])
   for(const [label,value] of meta){
     pdf.setTextColor(...muted);pdf.text(label+':',pad,y)
@@ -121,8 +123,12 @@ export function makeQuotePdf(budget:QuoteBudget, snapshot:QuotePdfSnapshot):jsPD
   pdf.text(clp(budget.grandTotalClp),W-pad-5,y+4,{align:'right'})
   y+=15
   const notes=[
-    'DOCUMENTO DE PRUEBA - PRECIOS FICTICIOS Y EDITABLES. NO ES COTIZACION.',
-    'No se han seleccionado ni cotizado marcas, modelos, garantias o proveedores.',
+    budget.supplierLabel
+      ? 'PRECIOS MIXTOS: EQUIPOS CON REFERENCIA, RESTO FICTICIO. NO ES COTIZACION.'
+      : 'DOCUMENTO DE PRUEBA - PRECIOS FICTICIOS Y EDITABLES. NO ES COTIZACION.',
+    budget.supplierLabel
+      ? 'Precios publicados de equipos sin oferta vigente, revision SEC ni garantia validada.'
+      : 'No se han seleccionado ni cotizado marcas, modelos, garantias o proveedores.',
     'Potencia de inversor, cantidades, protecciones y estructuras requieren ingenieria.',
     'No incluye levantamiento real, sombras, transporte validado ni factibilidad SEC.',
     'La produccion y el ahorro son orientativos, no ingresos ni rentabilidad garantizada.',
