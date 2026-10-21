@@ -81,7 +81,13 @@ export function QuotePanel(props:Props){
         generationSource:props.generationSource,
         locationLabel:props.locationLabel,
         moduleReference:props.moduleReference,
-        supplierReference:usingSupplier?equipment.provider+' · referencia 20/10/2026':undefined,
+        supplierReference:usingSupplier?(equipment.provider===presetByTier(tier).configuration.provider &&
+          equipment.inverterModel===presetByTier(tier).configuration.inverterModel &&
+          equipment.batteryModel===presetByTier(tier).configuration.batteryModel &&
+          equipment.inverterGrossClp===presetByTier(tier).configuration.inverterGrossClp &&
+          equipment.batteryGrossClp===presetByTier(tier).configuration.batteryGrossClp
+          ? 'Enertik Chile, precios publicados 20/10/2026'
+          : equipment.provider+', datos modificados sin cotizacion validada'):undefined,
       })
     } catch {
       setDownloadError('No se pudo generar el archivo PDF. Revisa el navegador y vuelve a intentarlo.')

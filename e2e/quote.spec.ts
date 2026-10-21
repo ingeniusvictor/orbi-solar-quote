@@ -14,7 +14,7 @@ test('selects manufacturer-backed module, recalculates quote and downloads valid
   await expect(page.getByText(/módulos de 450 Wp considerados/)).toBeVisible()
   const quote=page.getByRole('region',{name:'Presupuesto demostrativo de sistema solar'})
   await expect(quote).toBeVisible()
-  await expect(quote.getByText(/TODOS LOS PRECIOS SON FICTICIOS/)).toBeVisible()
+  await expect(quote.getByText(/NO CONSTITUYE OFERTA COMERCIAL/)).toBeVisible()
   const moduleUnit=quote.getByRole('spinbutton',{name:/Precio unitario neto Módulo fotovoltaico genérico/})
   await moduleUnit.fill('155000')
   await moduleUnit.blur()
@@ -45,7 +45,7 @@ test('selects manufacturer-backed module, recalculates quote and downloads valid
 test('edits Enertik Voltronic 6.2 kW and battery bank without affecting module prices',async({page})=>{
  await page.goto('/')
  await page.getByRole('button',{name:'Continuar'}).click()
- await page.getByRole('button',{name:/Híbrido/i}).click()
+ await page.locator('.system-option').filter({hasText:'Híbrido'}).click()
  await page.getByRole('button',{name:/Calcular mi potencial/}).click()
  const panel=page.getByRole('region',{name:'Presupuesto demostrativo de sistema solar'})
  await expect(panel).toBeVisible()
