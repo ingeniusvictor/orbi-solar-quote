@@ -54,3 +54,11 @@ Se puede alternar entre una referencia genérica sin ficha y **Trina Solar TSM-4
 El comparador de string muestra únicamente una referencia aritmética usando el inversor GoodWe GW5000-DNS-30, **sin aprobar compatibilidad, AFCI, perfil de red ni autorización SEC chilena**. Todo equipo debe comprobarse en el registro oficial de la SEC antes de TE4 (incluida la obligación AFCI vigente desde 2026). Los costos siguen siendo **100% ficticios**, aun cuando el módulo técnico sea real.
 
 QA de navegador y PDF: `npm run test:e2e` (Playwright, Chromium). El artefacto de GitHub Actions incluirá captura PNG del resultado y PDF descargado para inspección posterior.
+
+## SQ-04D — Enertik + Voltronic: cuatro potencias y bancos editables
+
+Primera familia de cotización: perfiles **3 / 5 / 6,2 / 8 kW**, inversores Voltronic (incluido equipo Enertik OEM basado en Axpert), baterías LiFePO₄ Taiyo/Enertik 25,6 V 100 Ah o rack 51,2 V 100 Ah. Los precios del **inversor y batería** provienen de páginas del distribuidor observadas el **20/10/2026** con IVA incluido; se convierten a netos para el motor económico sin sumar dos veces el impuesto. Todos los demás precios del presupuesto siguen siendo ficticios.
+
+Es posible cambiar el tramo de potencia y editar proveedor, modelo, precio, tensión, capacidad, corriente y número de baterías, sin programar una nueva integración. Las páginas originales se conservan como evidencia solo de los datos iniciales, no de las modificaciones que realice el usuario.
+
+**No confundir**: el Axpert VM II Premium 5K no está acreditado para inyección; el Axpert Premium+ 6.2K figura como 6200 W con aporte solar, **5000 W solo con baterías**. Los cálculos de corriente son cribados nominales, no garantías de autonomía, compatibilidad BMS, AFCI o aprobación SEC. Véase `docs/SQ04D_ENERTIK_REFERENCES.md`.

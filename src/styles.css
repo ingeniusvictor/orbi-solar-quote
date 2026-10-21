@@ -187,3 +187,27 @@ main{position:relative}.background-glow{position:absolute;top:15px;left:55%;widt
 .sq-equipment-tip svg{flex:none}
 @media(max-width:700px){.sq-equipment-panel{padding:15px}.sq-equipment-options{grid-template-columns:1fr}.sq-equipment-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media print{.sq-equipment-panel{background:#fff;color:#111}.sq-equipment-options,.sq-equipment-screen,.sq-equipment-warning,.sq-equipment-source,.sq-equipment-tip{display:none}}
+
+/* SQ-04D — Enertik/Voltronic editable reference equipment */
+.enertik-panel{border:1px solid #376c72;border-radius:13px;padding:18px;background:linear-gradient(135deg,#112b36,#0e2834);margin:17px 0 20px}
+.enertik-panel h5{margin:0 0 8px;color:#86ebd0;font-size:14px;font-family:Manrope,sans-serif}
+.enertik-panel>p{color:#a5c5c8;font-size:11px;line-height:1.7}
+.enertik-switch{display:flex;align-items:center;gap:9px;cursor:pointer;color:#c7e7e6;font-size:12px;font-weight:700;margin:18px 0}
+.enertik-switch input{accent-color:#46e2b7;width:17px;height:17px;flex:none}
+.enertik-on-grid-note{padding:15px;background:#102837;border-radius:11px;color:#b4d5d5;font-size:12px;line-height:1.7}
+.enertik-tiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0}
+.enertik-tiers button{cursor:pointer;border:1px solid #49676a;background:#15313e;border-radius:9px;color:#ddf0f0;padding:12px 4px;font-size:13px;font-weight:800}
+.enertik-tiers button.active{background:#14594f;border-color:#65eac6;color:#a1ffdd}
+.enertik-tiers button small{display:block;font-size:10px;font-weight:400;color:#b1d0cd;margin-top:5px}
+.enertik-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.enertik-fields label{display:flex;flex-direction:column;gap:7px;color:#b8d6d5;font-size:11px;font-weight:700;min-width:0}
+.enertik-fields input{width:100%;min-width:0;max-width:100%;border:1px solid #42636a;background:#0a202c;border-radius:9px;color:#f2fafa;padding:11px;font-size:12px}
+.enertik-check{background:#142f37;border:1px solid #3b6669;padding:14px;border-radius:11px;margin:16px 0;color:#d5f1ea}
+.enertik-check strong{font-size:12px}
+.enertik-check p{font-size:11px;line-height:1.7;margin:8px 0;color:#a9d1d2}
+.enertik-check p[role="alert"]{color:#ffce93}
+.enertik-sources{display:flex;flex-direction:column;gap:9px;font-size:11px}
+.enertik-sources a{color:#79eccd;text-underline-offset:3px;overflow-wrap:anywhere}
+.enertik-sources small{font-size:10px;line-height:1.65;color:#a1b8bf}
+@media(max-width:700px){.enertik-panel{padding:14px}.enertik-fields{grid-template-columns:1fr}.enertik-tiers{gap:5px}.enertik-tiers button{padding:10px 3px;font-size:12px}}
+@media print{.enertik-tiers,.enertik-fields,.enertik-sources,.enertik-switch{display:none}.enertik-panel{background:white!important;border-color:#999;color:black}}

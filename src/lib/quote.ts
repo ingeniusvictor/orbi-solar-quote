@@ -1,4 +1,5 @@
 import type { SystemType } from './solar'
+import {netFromGross,type SupplierConfiguration} from './enertik-presets'
 
 /**
  * ORBI SQ-04: A fully editable DEMO pricebook, NOT vendor pricing or a
@@ -36,6 +37,8 @@ export interface QuoteInput {
   marginPct: number
   vatPct: number
   overrides?: PriceOverrides
+  supplierEquipment?:SupplierConfiguration
+  supplierSourceUnmodified?:boolean
 }
 export interface QuoteLine {
   id:PriceKey
@@ -44,6 +47,7 @@ export interface QuoteLine {
   quantity:number
   unitNetClp:number
   totalNetClp:number
+  priceOrigin?:'synthetic'|'enertik-snapshot'|'edited'
 }
 export interface QuoteBudget {
   demoOnly:true
@@ -53,6 +57,7 @@ export interface QuoteBudget {
   systemKwp:number
   batteryTargetKwh:number
   installedBatteryNominalKwh:number
+  supplierLabel:string|null
   lines:QuoteLine[]
   directNetClp:number
   marginPct:number
@@ -81,8 +86,19 @@ export function calculateQuote(input:QuoteInput):QuoteBudget {
   const vatPct=nonNegative('vatPct',input.vatPct,100)
   const systemKwp=count*panelWp/1000
   const hasArray=count>0 && systemKwp>0
+  const useSupplier=hasArray && input.systemType!=='on-grid' && !!input.supplierEquipment
+  const selected=input.supplierEquipment
+  if(useSupplier && selected){
+    if(!Number.isInteger(selected.batteryUnits)||selected.batteryUnits<0||selected.batteryUnits>100)
+      throw new RangeError('Cantidad de baterias inválida')
+    nonNegative('batteryNominalKwh',selected.batteryNominalKwh,1000)
+    nonNegative('inverterGrossClp',selected.inverterGrossClp,1e11)
+    nonNegative('batteryGrossClp',selected.batteryGrossClp,1e11)
+    if(!selected.provider.trim()||!selected.inverterModel.trim()||!selected.batteryModel.trim())
+      throw new RangeError('Proveedor y modelos deben identificarse')
+  }
   const batteryCount=hasArray && input.systemType!=='on-grid'
-    ? Math.ceil(targetStorage/5) : 0
+    ? useSupplier && selected ? selected.batteryUnits : Math.ceil(targetStorage/5) : 0
   const inverterId:PriceKey=input.systemType==='hybrid'?'inverterHybrid'
     : input.systemType==='off-grid'?'inverterOffgrid':'inverterGrid'
   const quantities:Partial<Record<PriceKey,number>>={
@@ -99,12 +115,21 @@ export function calculateQuote(input:QuoteInput):QuoteBudget {
   for(const entry of DEMO_PRICE_BOOK) {
     const quantity=quantities[entry.id]??0
     if(quantity<=0)continue
-    const raw=input.overrides?.[entry.id]??entry.netUnitClp
+    const isSupplierInverter=useSupplier && selected && entry.id===inverterId
+    const isSupplierBattery=useSupplier && selected && entry.id==='battery5kwh'
+    const supplierGross=isSupplierInverter ? selected?.inverterGrossClp
+      :isSupplierBattery ? selected?.batteryGrossClp : undefined
+    const raw=input.overrides?.[entry.id] ??
+      (supplierGross===undefined ? entry.netUnitClp : netFromGross(supplierGross))
     const unitNetClp=nonNegative(entry.id,raw,1e10)
+    const label=isSupplierInverter ? 'Inversor '+selected!.inverterModel :
+      isSupplierBattery ? 'Batería '+selected!.batteryModel : entry.label
     lines.push({
-      id:entry.id,label:entry.label,unit:entry.unit,quantity,
+      id:entry.id,label,unit:entry.unit,quantity,
       unitNetClp,
       totalNetClp:money(quantity*unitNetClp),
+      priceOrigin:input.overrides?.[entry.id]!==undefined || (supplierGross!==undefined && input.supplierSourceUnmodified===false) ? 'edited'
+        :supplierGross!==undefined ? 'enertik-snapshot' : 'synthetic',
     })
   }
   const directNetClp=lines.reduce((sum,line)=>sum+line.totalNetClp,0)
@@ -115,7 +140,9 @@ export function calculateQuote(input:QuoteInput):QuoteBudget {
   return {
     demoOnly:true,systemType:input.systemType,moduleCount:count,modulePowerWp:panelWp,
     systemKwp,batteryTargetKwh:input.systemType==='on-grid'?0:targetStorage,
-    installedBatteryNominalKwh:batteryCount*5,lines,directNetClp,
+    installedBatteryNominalKwh:batteryCount*(useSupplier?selected!.batteryNominalKwh:5),
+    supplierLabel:useSupplier?selected!.provider:null,
+    lines,directNetClp,
     marginPct,marginClp,netWithMarginClp,vatPct,vatClp,grandTotalClp,
     costClpPerWp:systemKwp>0?grandTotalClp/(systemKwp*1000):null,
   }
